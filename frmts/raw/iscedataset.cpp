@@ -770,7 +770,11 @@ GDALDataset *ISCEDataset::Open( GDALOpenInfo *poOpenInfo, bool bFileSizeCheck )
                                                          "Coordinate2startingValue" ) );
         adfGeoTransform[4] = 0.0;
         adfGeoTransform[5] = CPLAtof( CSLFetchNameValue( papszXmlProps,
-                                                               "Coordinate2delta" ) );
+                                                         "Coordinate2delta" ) );
+        // ISCE XML files use the center of the pixel as the origin
+        // Shift by 1/2 pixel to make a consistent GeoTransform
+        adfGeoTransform[0] -= adfGeoTransform[1] / 2.0;
+        adfGeoTransform[3] -= adfGeoTransform[5] / 2.0;
         poDS->SetGeoTransform( adfGeoTransform );
 
         /* ISCE format seems not to have a projection field, but uses   */
